@@ -82,6 +82,7 @@ tasks.register('icons') {
     }
 }
 
+
 tasks.register('installer') {
     // dependencies: jpackage. on Windows: Wix; on Mac:
 
@@ -99,6 +100,15 @@ tasks.register('installer') {
                 "--main-jar", "ocr-dude.jar" ];
             if (Os.isFamily(Os.FAMILY_MAC)) {
                 cmdLine.addAll(["--icon", "build/OCRDude.icns"])
+            } else if(Os.isFamily(Os.FAMILY_UNIX)) {
+                cmdLine.addAll([
+                    "--linux-package-deps", "tesseract-ocr",
+                    "--linux-shortcut",
+                    "--linux-app-category", "Productivity",
+                    "--linux-menu-group", "Productivity"
+                ])
+            } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                // TODO
             }
             commandLine cmdLine
         }
