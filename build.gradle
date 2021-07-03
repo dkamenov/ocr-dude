@@ -88,7 +88,7 @@ tasks.register('installer') {
     dependsOn(jar, icons)
     doLast {
         exec {
-            commandLine "jpackage",
+            def cmdLine = ["jpackage",
                 "--verbose",
                 "--vendor", "Drago Z Kamenov",
                 "--copyright", "© 2021 Drago Z Kamenov",
@@ -96,8 +96,11 @@ tasks.register('installer') {
                 "--name", "OCRDude",
                 "--dest", "build/installer/",
                 "--input", "build/libs",
-                "--main-jar", "ocr-dude.jar",
-                "--icon", "build/OCRDude.icns";
+                "--main-jar", "ocr-dude.jar" ];
+            if (Os.isFamily(Os.FAMILY_MAC)) {
+                cmdLine.addAll(["--icon", "build/OCRDude.icns"])
+            }
+            commandLine cmdLine
         }
     }
 }
