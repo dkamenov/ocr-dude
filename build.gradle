@@ -1,0 +1,101 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+plugins {
+    // Apply the java plugin to add support for Java
+    id 'java'
+
+    // Apply the application plugin to add support for building a CLI application.
+    id 'application'
+
+    id 'idea'
+
+    id "io.freefair.lombok" version "5.1.0"
+    id "de.inetsoftware.appbundler" version "4.8.7"
+
+}
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    // Use jcenter for resolving dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    // This dependency is used by the application.
+    implementation 'com.google.guava:guava:28.0-jre'
+
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
+
+    // https://mvnrepository.com/artifact/net.sourceforge.tess4j/tess4j
+    compile group: 'net.sourceforge.tess4j', name: 'tess4j', version: '4.5.1'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+}
+apply plugin: "de.inetsoftware.setupbuilder"
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'com.kamenov.ocrdude.App'
+}
+
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'com.kamenov.ocrdude.App'
+        )
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+//def String inputFilepath
+//def String iconsetName
+
+tasks.register('icons') {
+
+    doLast {
+        if (Os.isFamily(Os.FAMILY_MAC)) {
+            exec {
+                def inputFilepath = 'src/main/resources/images/general-ocr.png'
+                def iconsetName = 'build/OCRDude.iconset'
+
+                commandLine "sh scripts/mac_icon.sh ${inputFilepath} ${iconsetName}".split(' ')
+            }
+        }
+    }
+}
+
+tasks.register('installer') {
+    // dependencies: jpackage. on Windows: Wix; on Mac:
+
+    dependsOn(jar, icons)
+    doLast {
+        exec {
+            commandLine "jpackage",
+                "--verbose",
+                "--vendor", "Drago Z Kamenov",
+                "--copyright", "© 2021 Drago Z Kamenov",
+                "--app-version", "2021.06.30",
+                "--name", "OCRDude",
+                "--dest", "build/installer/",
+                "--input", "build/libs",
+                "--main-jar", "ocr-dude.jar",
+                "--icon", "build/OCRDude.icns";
+        }
+    }
+}
+
