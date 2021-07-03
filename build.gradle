@@ -37,8 +37,8 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
 
-    compileOnly 'org.projectlombok:lombok:1.18.12'
-    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
 }
 apply plugin: "de.inetsoftware.setupbuilder"
