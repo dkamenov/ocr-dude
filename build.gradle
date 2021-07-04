@@ -115,7 +115,7 @@ tasks.register('installer') {
                     "--win-menu-group", "Productivity",
                     "--win-per-user-install",
                     "--win-shortcut",
-                    "--icon", "src/main/resources/images/general-ocr.png",
+                    "--icon", "src/main/resources/images/general-ocr.ico",
                 ])
             }
             commandLine cmdLine
