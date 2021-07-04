@@ -1,13 +1,16 @@
 package com.kamenov.ocrdude;
 
 import java.awt.BorderLayout;
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class MainWindowView extends JFrame implements MainView {
     private OcrController controller;
 
@@ -29,6 +32,11 @@ public class MainWindowView extends JFrame implements MainView {
         toolBar.add(button);
         add(toolBar, BorderLayout.NORTH);
 
+        try {
+            setIconImage(ImageIO.read(getClass().getResource("/images/general-ocr.png")));
+        } catch (Exception ignored) {
+            log.warn("Could not load icon image");
+        }
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
     }
