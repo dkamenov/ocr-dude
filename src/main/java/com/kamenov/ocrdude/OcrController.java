@@ -34,10 +34,13 @@ public class OcrController {
     @Setter
     private MainView mainView;
 
-    public OcrController(TesseractHelper helper) {
-        this.tesseractHelper = helper;
+    public OcrController(String langCode) {
+        this.tesseractHelper = new TesseractHelper(langCode);
     }
 
+    public String getActiveLanguage() {
+        return tesseractHelper.getActiveLanguage();
+    }
 
     public void onScreenshotSelected() {
         BufferedImage image = ScreenshotHelper.takeScreenshot();
@@ -106,5 +109,9 @@ public class OcrController {
 
     public void onClose() {
         mainView.close();
+    }
+
+    public void onLanguageSelected(String langCode) {
+        tesseractHelper.setLanguage(langCode);
     }
 }

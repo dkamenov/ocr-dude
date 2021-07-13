@@ -3,7 +3,6 @@
  */
 package com.kamenov.ocrdude;
 
-import com.kamenov.ocrdude.utils.TesseractHelper;
 import com.kamenov.ocrdude.view.TrayIconView;
 import java.awt.SystemTray;
 import javax.swing.JFrame;
@@ -41,8 +40,8 @@ public class App extends JFrame {
             boolean windowMode = cmdLine.hasOption("w");
 
             log.info("Using language '{}'", langCode);
-            TesseractHelper helper = new TesseractHelper(langCode);
-            OcrController controller = new OcrController(helper);
+
+            OcrController controller = new OcrController(langCode);
 
             if (!SystemTray.isSupported()) {
                 log.warn("System tray is not supported on this OS, defaulting to window mode");

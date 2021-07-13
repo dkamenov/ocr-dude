@@ -62,7 +62,7 @@ jar {
     }
 
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-    exclude('META-INF/**', '**/*.txt')
+    exclude('META-INF/**', 'tessdata/**')
 }
 
 //def String inputFilepath

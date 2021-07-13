@@ -3,16 +3,19 @@ package com.kamenov.ocrdude.view;
 import com.kamenov.ocrdude.MainView;
 import com.kamenov.ocrdude.OcrController;
 import com.kamenov.ocrdude.OcrException;
+import com.kamenov.ocrdude.utils.TesseractHelper;
 import java.awt.AWTException;
+import java.awt.CheckboxMenuItem;
 import java.awt.Image;
+import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
+import java.awt.event.ItemEvent;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.util.Map.Entry;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TrayIconView implements MainView {
     private OcrController controller;
     private TrayIcon trayIcon;
+    private CheckboxMenuItem selectedLanguageItem;
 
     public TrayIconView(OcrController controller) {
         this.controller = controller;
@@ -54,6 +58,9 @@ public class TrayIconView implements MainView {
             menuItemFile.addActionListener(e -> controller.onFileOpenSelected());
             popup.add(menuItemFile);
 
+            Menu languagesMenu = makeLanguagesMenu();
+            popup.add(languagesMenu);
+
             MenuItem menuItemClose = new MenuItem("Close");
             menuItemClose.addActionListener(e -> controller.onClose());
             popup.add(menuItemClose);
@@ -65,6 +72,30 @@ public class TrayIconView implements MainView {
         } catch (IOException | AWTException e) {
             throw new OcrException("Could not load icon", e);
         }
+    }
+
+
+    private Menu makeLanguagesMenu() {
+        Menu languagesMenu = new Menu("Language");
+        for(Entry entry : TesseractHelper.getLanguageCodes().entrySet()) {
+            CheckboxMenuItem item = new CheckboxMenuItem((String) entry.getKey());
+            item.addItemListener(evt -> {
+                this.languageSelected(evt);
+            });
+            if (controller.getActiveLanguage().equals(entry.getValue())) {
+                selectedLanguageItem = item;
+                item.setState(true);
+            }
+            languagesMenu.add(item);
+        }
+        return languagesMenu;
+    }
+
+    public void languageSelected(ItemEvent evt) {
+        selectedLanguageItem.setState(false); // uncheck old item
+        selectedLanguageItem = (CheckboxMenuItem) evt.getSource();
+        log.debug("Selected language: {}", selectedLanguageItem.getLabel());
+        controller.onLanguageSelected(TesseractHelper.getLanguageCodes().get(selectedLanguageItem.getLabel()));
     }
 
     @Override
