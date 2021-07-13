@@ -3,15 +3,10 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
     // Apply the java plugin to add support for Java
     id 'java'
-
     // Apply the application plugin to add support for building a CLI application.
     id 'application'
-
     id 'idea'
-
     id "io.freefair.lombok" version "5.1.0"
-    id "de.inetsoftware.appbundler" version "4.8.7"
-
 }
 
 
@@ -41,7 +36,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
 }
-apply plugin: "de.inetsoftware.setupbuilder"
 
 application {
     // Define the main class for the application.
@@ -65,9 +59,6 @@ jar {
     exclude('META-INF/**', 'tessdata/**')
 }
 
-//def String inputFilepath
-//def String iconsetName
-
 tasks.register('icons') {
 
     doLast {
@@ -89,11 +80,13 @@ tasks.register('installer') {
     dependsOn(jar, icons)
     doLast {
         exec {
+            def buildNumber = System.env.BUILD_NUMBER ? System.env.BUILD_NUMBER : (new Date()).format('yyyyMMddHHmmss')
+            def installerVersion="${installerVersion}.${buildNumber}"
+            def copyrightDate = (new Date().format('YYYY').equals("2021") ? "2021" : "2021-" + new Date().format('yyyy'))
             def cmdLine = ["jpackage",
-                "--verbose",
-                "--vendor", "Drago Z Kamenov",
-                "--copyright", "© 2021 Drago Z Kamenov",
-                "--app-version", "21.06.30",
+                "--vendor", vendor,
+                "--copyright", "© $copyrightDate $vendor",
+                "--app-version", installerVersion,
                 "--name", "OCRDude",
                 "--dest", "build/installer/",
                 "--input", "build/libs",
