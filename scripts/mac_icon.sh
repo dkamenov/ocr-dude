@@ -1,10 +1,5 @@
 #!/bin/sh
 
-№
-№
-
-
-
 set -xe
 
 input_file=$1

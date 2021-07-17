@@ -95,8 +95,8 @@ public class OcrController {
 
     public void onFileOpenSelected() {
 
-        JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home") + "/Desktop");
-        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+        JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home"));
+        if (fileChooser.showOpenDialog(fileChooser) == JFileChooser.APPROVE_OPTION) {
             try {
                 BufferedImage image = ImageIO.read(fileChooser.getSelectedFile());
                 log.info("Opened File: " + fileChooser.getSelectedFile().getAbsolutePath());
