@@ -1,7 +1,4 @@
 pipeline {
-    options {
-        copyArtifactPermission '*' // allow other jobs to use archived artifacts
-    }
     agent any
     stages {
         stage('build') {
