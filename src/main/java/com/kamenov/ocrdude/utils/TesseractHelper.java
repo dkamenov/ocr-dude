@@ -22,6 +22,7 @@ public class TesseractHelper {
     private String activeLanguage;
 
     public TesseractHelper(String languageCode) {
+        FileHelper.loadNativeLibSafe();
         tesseract = new Tesseract();
         setLanguage(languageCode);
         tesseract.setOcrEngineMode(TessOcrEngineMode.OEM_LSTM_ONLY);
@@ -38,6 +39,7 @@ public class TesseractHelper {
     }
 
     public String extractText(BufferedImage image) {
+        FileHelper.loadNativeLibSafe();
         try {
             return tesseract.doOCR(image);
         } catch (TesseractException e) {

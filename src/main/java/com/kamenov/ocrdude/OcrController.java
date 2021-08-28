@@ -69,6 +69,7 @@ public class OcrController {
             log.debug("OCR'd text copied to clipboard. Time elapsed: {}s", (t2 - t1) / 1000);
             SoundEffectHelper.soundEffect();
         } catch (UnsatisfiedLinkError ule) {
+            log.error("Library Load Error", ule);
             showErrorMessageAndExit(TESSERACT_ERROR_TITLE, TESSERACT_ERROR_MESSAGE);
         } catch (Exception e) {
             log.error("Fatal exception", e);
