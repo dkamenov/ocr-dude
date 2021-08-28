@@ -10,8 +10,7 @@ pipeline {
                             copyArtifacts(projectName: 'Tesseract-libs', filter: "tesseract/build/.libs/libtesseract.5.dylib",
                                     target: 'src/main/resources/lib', selector: lastSuccessful());
                         }
-                        cleanWs()
-                        sh './gradlew installer'
+                        sh './gradlew clean installer'
                     }
                     post {
                         success {
