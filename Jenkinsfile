@@ -7,7 +7,7 @@ pipeline {
                     agent { label 'OS_X' }
                     steps {
                         script {
-                            copyArtifacts(projectName: 'Tesseract-libs', filter: "libtesseract.5.dylib",
+                            copyArtifacts(projectName: 'Tesseract-libs', filter: "tesseract/build/.libs/libtesseract.5.dylib",
                                     target: 'src/main/resources/lib', selector: lastSuccessful());
                         }
                         cleanWs()
