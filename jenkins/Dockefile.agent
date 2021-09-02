@@ -1,0 +1,3 @@
+from openjdk:16-alpine
+
+apk add fakeroot

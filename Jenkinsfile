@@ -31,8 +31,12 @@ pipeline {
 
                 stage('Ubuntu Build') {
                     agent {
+
                         docker {
-                            image 'openjdk:16-alpine'
+                            dockerfile {
+                                dir 'jenkins'
+                                dockerfile 'Dockerfile.agent'
+                            }
                             reuseNode true
                         }
                     }
