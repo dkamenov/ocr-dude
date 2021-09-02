@@ -30,7 +30,12 @@ pipeline {
                 }
 
                 stage('Ubuntu Build') {
-                    agent { label LABEL_LINUX }
+                    agent {
+                        docker {
+                            image 'openjdk:16-alpine'
+                            reuseNode true
+                        }
+                    }
                     when {
                         beforeAgent true
                         expression {
