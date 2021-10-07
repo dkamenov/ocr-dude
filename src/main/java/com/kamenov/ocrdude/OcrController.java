@@ -41,7 +41,6 @@ public class OcrController {
             throw new OcrException("Invalid language code '" + langCode + "'");
         }
         Preferences prefs = Preferences.userNodeForPackage(com.kamenov.ocrdude.App.class);
-        log.debug("Preferences path:{}", prefs.absolutePath());
         if (langCode == null) {
             langCode = prefs.get(LANGUAGE, "eng");
         } else {
