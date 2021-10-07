@@ -24,16 +24,15 @@ public class TesseractHelper {
     public TesseractHelper(String languageCode) {
         FileHelper.loadNativeLibSafe();
         tesseract = new Tesseract();
-        setLanguage(languageCode);
         tesseract.setOcrEngineMode(TessOcrEngineMode.OEM_LSTM_ONLY);
-
-        FileHelper.extractDataFile(languageCode, false);
-        log.debug("Setting data path to {}", FileHelper.dataPath().toString());
-        tesseract.setDatapath(FileHelper.dataPath().toString());
+        setLanguage(languageCode);
     }
 
     public void setLanguage(String langCode) {
         log.info("Switching to '{}'", langCode);
+        FileHelper.extractDataFile(langCode, false);
+        log.debug("Setting data path to {}", FileHelper.dataPath().toString());
+        tesseract.setDatapath(FileHelper.dataPath().toString());
         activeLanguage = langCode;
         tesseract.setLanguage(activeLanguage);
     }

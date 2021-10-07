@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.prefs.Preferences;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -27,6 +28,7 @@ public class OcrController {
     private static final String TESSERACT_ERROR_MESSAGE = "This program needs Tesseract to work properly. Follow "
             + " the instructions at " + INSTALLATION_URL + " to install it.";
     private static final String INSTALL_PROMPT = "(Click \"Yes\" to open page)";
+    private static final String LANGUAGE = "language";
 
     private TesseractHelper tesseractHelper;
     private JFrame selectionWindow = null;
@@ -35,6 +37,16 @@ public class OcrController {
     private MainView mainView;
 
     public OcrController(String langCode) {
+        if (langCode != null && !TesseractHelper.getLanguageCodes().containsValue(langCode)) {
+            throw new OcrException("Invalid language code '" + langCode + "'");
+        }
+        Preferences prefs = Preferences.userNodeForPackage(com.kamenov.ocrdude.App.class);
+        log.debug("Preferences path:{}", prefs.absolutePath());
+        if (langCode == null) {
+            langCode = prefs.get(LANGUAGE, "eng");
+        } else {
+            prefs.put(LANGUAGE, langCode);
+        }
         this.tesseractHelper = new TesseractHelper(langCode);
     }
 
@@ -114,5 +126,7 @@ public class OcrController {
 
     public void onLanguageSelected(String langCode) {
         tesseractHelper.setLanguage(langCode);
+        Preferences prefs = Preferences.userNodeForPackage(com.kamenov.ocrdude.App.class);
+        prefs.put(LANGUAGE, langCode);
     }
 }
