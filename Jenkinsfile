@@ -31,13 +31,9 @@ pipeline {
 
                 stage('Ubuntu Build') {
                     agent {
-
-                        docker {
-                            dockerfile {
-                                dir 'jenkins'
-                                dockerfile 'Dockerfile.agent'
-                            }
-                            reuseNode true
+                        dockerfile {
+                            dir 'jenkins'
+                            filename 'Dockerfile.agent'
                         }
                     }
                     when {
@@ -69,11 +65,7 @@ pipeline {
                         }
                     }
                     steps {
-                        script {
-                            copyArtifacts(projectName: 'Tesseract-libs', filter: "tesseract/build/.libs/libtesseract.5.dylib",
-                                    target: 'src/main/resources/lib', selector: lastSuccessful(), flatten: true);
-                        }
-                        sh 'gradlew.bat clean installer'
+                        bat 'gradlew.bat clean installer'
                     }
                     post {
                         success {
