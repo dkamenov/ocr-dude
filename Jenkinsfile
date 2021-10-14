@@ -65,7 +65,7 @@ pipeline {
                         }
                     }
                     steps {
-                        sh 'gradlew.bat clean installer'
+                        bat 'gradlew.bat clean installer'
                     }
                     post {
                         success {
