@@ -65,10 +65,6 @@ pipeline {
                         }
                     }
                     steps {
-                        script {
-                            copyArtifacts(projectName: 'Tesseract-libs', filter: "tesseract/build/.libs/libtesseract.5.dylib",
-                                    target: 'src/main/resources/lib', selector: lastSuccessful(), flatten: true);
-                        }
                         sh 'gradlew.bat clean installer'
                     }
                     post {
