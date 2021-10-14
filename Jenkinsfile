@@ -31,13 +31,9 @@ pipeline {
 
                 stage('Ubuntu Build') {
                     agent {
-
-                        docker {
-                            dockerfile {
-                                dir 'jenkins'
-                                dockerfile 'Dockerfile.agent'
-                            }
-                            reuseNode true
+                        dockerfile {
+                            dir 'jenkins'
+                            filename 'Dockerfile.agent'
                         }
                     }
                     when {
