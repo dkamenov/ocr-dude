@@ -36,12 +36,8 @@ public class App extends JFrame {
             CommandLineParser parser = new DefaultParser();
             CommandLine cmdLine = parser.parse(options, args);
 
-            String langCode = cmdLine.hasOption("l") ? cmdLine.getOptionValue('l') : "eng";
             boolean windowMode = cmdLine.hasOption("w");
-
-            log.info("Using language '{}'", langCode);
-
-            OcrController controller = new OcrController(langCode);
+            OcrController controller = new OcrController(cmdLine.getOptionValue('l'));
 
             if (!SystemTray.isSupported()) {
                 log.warn("System tray is not supported on this OS, defaulting to window mode");

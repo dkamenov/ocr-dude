@@ -87,7 +87,7 @@ tasks.register('installer') {
                 "--vendor", vendor,
                 "--copyright", "© $copyrightDate $vendor",
                 "--app-version", installerVersion,
-                "--name", "OCRDude",
+                "--name", "OCR Dude",
                 "--dest", "build/installer/",
                 "--input", "build/libs",
                 "--main-jar", "ocr-dude.jar" ];

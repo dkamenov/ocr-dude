@@ -22,22 +22,23 @@ public class TesseractHelper {
     private String activeLanguage;
 
     public TesseractHelper(String languageCode) {
+        FileHelper.loadNativeLibSafe();
         tesseract = new Tesseract();
-        setLanguage(languageCode);
         tesseract.setOcrEngineMode(TessOcrEngineMode.OEM_LSTM_ONLY);
-
-        FileHelper.extractDataFile(languageCode, false);
-        log.debug("Setting data path to {}", FileHelper.dataPath().toString());
-        tesseract.setDatapath(FileHelper.dataPath().toString());
+        setLanguage(languageCode);
     }
 
     public void setLanguage(String langCode) {
         log.info("Switching to '{}'", langCode);
+        FileHelper.extractDataFile(langCode, false);
+        log.debug("Setting data path to {}", FileHelper.dataPath().toString());
+        tesseract.setDatapath(FileHelper.dataPath().toString());
         activeLanguage = langCode;
         tesseract.setLanguage(activeLanguage);
     }
 
     public String extractText(BufferedImage image) {
+        FileHelper.loadNativeLibSafe();
         try {
             return tesseract.doOCR(image);
         } catch (TesseractException e) {
