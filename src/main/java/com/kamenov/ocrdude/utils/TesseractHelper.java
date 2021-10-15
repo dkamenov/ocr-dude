@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.ITessAPI.TessOcrEngineMode;
@@ -16,7 +17,8 @@ import net.sourceforge.tess4j.TesseractException;
 
 @Slf4j
 public class TesseractHelper {
-    Tesseract tesseract;
+    private Tesseract tesseract;
+    private static LinkedHashMap<String, String> languageCodes;
 
     @Getter
     private String activeLanguage;
@@ -38,7 +40,6 @@ public class TesseractHelper {
     }
 
     public String extractText(BufferedImage image) {
-        FileHelper.loadNativeLibSafe();
         try {
             return tesseract.doOCR(image);
         } catch (TesseractException e) {
@@ -47,22 +48,31 @@ public class TesseractHelper {
     }
 
     public static Map<String, String> getLanguageCodes() {
-        ClassLoader classLoader = TesseractHelper.class.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream("languages.txt");
-        BufferedReader rdr = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
-        Map<String, String> langCodes = new LinkedHashMap();
-        try {
-            while ((line = rdr.readLine()) != null) {
-                String[] fields = line.split("\\|");
-                if(fields.length < 2) {
-                    continue;
+        if (null == languageCodes) {
+            ClassLoader classLoader = TesseractHelper.class.getClassLoader();
+            InputStream inputStream = classLoader.getResourceAsStream("languages.txt");
+            BufferedReader rdr = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            Map<String, String> codes = new LinkedHashMap();
+            try {
+                while ((line = rdr.readLine()) != null) {
+                    String[] fields = line.split("\\|");
+                    if (fields.length < 2) {
+                        continue;
+                    }
+                    codes.put(fields[1], fields[0]);
                 }
-                langCodes.put(fields[1], fields[0]);
+            } catch (IOException e) {
+                throw new OcrException("Could not read language codes", e);
             }
-        }catch (IOException e) {
-            throw new OcrException("Could not read language codes", e);
+            languageCodes = codes.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (oldValue, newValue) -> oldValue, LinkedHashMap::new));
         }
-        return langCodes;
+
+        return languageCodes;
     }
 }

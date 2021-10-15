@@ -2,8 +2,8 @@ package com.kamenov.ocrdude;
 
 import com.kamenov.ocrdude.utils.ScreenshotHelper;
 import com.kamenov.ocrdude.utils.SoundEffectHelper;
-import com.kamenov.ocrdude.view.CapturePanel;
 import com.kamenov.ocrdude.utils.TesseractHelper;
+import com.kamenov.ocrdude.view.CaptureWindow;
 import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -40,7 +40,7 @@ public class OcrController {
         if (langCode != null && !TesseractHelper.getLanguageCodes().containsValue(langCode)) {
             throw new OcrException("Invalid language code '" + langCode + "'");
         }
-        Preferences prefs = Preferences.userNodeForPackage(com.kamenov.ocrdude.App.class);
+        Preferences prefs = Preferences.userNodeForPackage(App.class);
         if (langCode == null) {
             langCode = prefs.get(LANGUAGE, "eng");
         } else {
@@ -59,12 +59,7 @@ public class OcrController {
     }
 
     private void showSelectionWindow(BufferedImage image) {
-        selectionWindow = new JFrame();
-        selectionWindow.add(new CapturePanel(image, this));
-        selectionWindow.setUndecorated(true);
-        selectionWindow.setAlwaysOnTop(true);
-        selectionWindow.pack();
-        selectionWindow.setVisible(true);
+        selectionWindow = new CaptureWindow(this, image);
     }
 
     public void onImageSelected(BufferedImage image) {
@@ -86,6 +81,10 @@ public class OcrController {
             log.error("Fatal exception", e);
             showErrorMessageAndExit("And error occurred", e.getMessage());
         }
+    }
+
+    public void onSelectionCanceled() {
+        selectionWindow.dispose();
     }
 
     private void showErrorMessageAndExit(String title, String message) {
@@ -120,12 +119,15 @@ public class OcrController {
     }
 
     public void onClose() {
+        if (selectionWindow != null && selectionWindow.isDisplayable()) {
+            selectionWindow.dispose();
+        }
         mainView.close();
     }
 
     public void onLanguageSelected(String langCode) {
         tesseractHelper.setLanguage(langCode);
-        Preferences prefs = Preferences.userNodeForPackage(com.kamenov.ocrdude.App.class);
+        Preferences prefs = Preferences.userNodeForPackage(App.class);
         prefs.put(LANGUAGE, langCode);
     }
 }

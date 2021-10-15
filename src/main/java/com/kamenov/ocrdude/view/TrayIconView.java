@@ -36,7 +36,7 @@ public class TrayIconView implements MainView {
 
     @Override
     public void hide() {
-        // nothhing to do
+        // nothing to do
     }
 
     private void installSystemTray() {

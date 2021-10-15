@@ -20,25 +20,39 @@ import org.apache.commons.lang3.SystemUtils;
 
 @Slf4j
 public class FileHelper {
+    public static final String APP_NAME = "OCR Dude";
+    private static final String HIDDEN_SETTINGS_DIR_NAME = ".ocrdude";
     private static final Path DATA_DIR = Paths.get(getDataDir(), "data");
     private static final Path NATIVE_LIB_DIR = Paths.get(getDataDir(), "lib");
-    private static final String TESSERACT_NATIVE_LIB_MAC = "lib/libtesseract.5.dylib";
-
+    private static final String LIBTESSERACT_DYLIB = "libtesseract.dylib";
+    private static final String TESSERACT_5_NATIVE_LIB_NAME_MAC = "libtesseract.5.dylib";
+    private static final String TESSERACT_5_NATIVE_LIB_MAC = "lib/" + TESSERACT_5_NATIVE_LIB_NAME_MAC;
+    private static final String JNA_LIBRARY_PATH = "jna.library.path";
+    private static final String TRAINEDDATA_SUFFIX = ".traineddata";
     private static final String[] DOWNLOAD_URLS = {
             "https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/master/",
             "https://raw.githubusercontent.com/tesseract-ocr/tessdata/master/", // fallback to lower quality
     };
 
     private static String getDataDir() {
+        String userHome = System.getProperty("user.home");
+        Path dataDir = null;
         if (SystemUtils.IS_OS_MAC_OSX) {
-            return Paths.get(System.getProperty("user.home"), "Library", "Application Support", "OCR Dude").toString();
+            // as per https://developer.apple.com/library/archive/qa/qa1170/_index.html
+            dataDir = Paths.get(userHome, "Library", "Application Support", APP_NAME);
         }
-        return Paths.get(System.getProperty("user.home"), ".ocrdude").toString();
+        if (SystemUtils.IS_OS_WINDOWS) {
+            dataDir = Paths.get(System.getProperty("APPDATA", userHome), APP_NAME);
+        }
+        if (dataDir == null) {
+            Paths.get(userHome, HIDDEN_SETTINGS_DIR_NAME);
+        }
+        return dataDir.toString();
     }
 
     public static void extractDataFile(String langCode, boolean forceDownloadNew) {
         try {
-            String langFileName = langCode + ".traineddata";
+            String langFileName = langCode + TRAINEDDATA_SUFFIX;
 
             Path targetFile = DATA_DIR.resolve(langFileName);
             if (!Files.exists(targetFile.getParent())) {
@@ -52,7 +66,7 @@ public class FileHelper {
 
             for (String downloadUrl : DOWNLOAD_URLS) {
                 URL url = new URL(
-                        String.format(downloadUrl + "%s.traineddata", langCode));
+                        String.format(downloadUrl + langFileName));
                 log.info("File {} does not exist, downloading from: '{}'...", targetFile, url);
                 try {
                     downloadFile(url, targetFile);
@@ -69,6 +83,7 @@ public class FileHelper {
     }
 
     private static void downloadFile(URL url, Path targetFile) throws IOException {
+        // TODO: retries
         ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
         FileOutputStream fileOutputStream = new FileOutputStream(targetFile.toAbsolutePath().toString());
         log.info("Downloading {} -> {}...", url, targetFile);
@@ -76,16 +91,21 @@ public class FileHelper {
         log.info("Downloaded {} bytes", bytes);
     }
 
+
     public static void loadNativeLibSafe() {
+        /**
+         * Load native lib if bundled in application jar - on Mac only. Tess4j already includes the Windows DLL
+         * not feasible to bundle .so on Linux because dynamic libraries are heavily version-dependent
+         */
         if (!SystemUtils.IS_OS_MAC_OSX) {
             return;
         }
 
-        if (null == FileHelper.class.getClassLoader().getResource(TESSERACT_NATIVE_LIB_MAC)) {
-            log.warn("Native lib {} not bundled, skipping...", TESSERACT_NATIVE_LIB_MAC);
+        if (null == FileHelper.class.getClassLoader().getResource(TESSERACT_5_NATIVE_LIB_MAC)) {
+            log.warn("Native lib {} not bundled, skipping loading...", TESSERACT_5_NATIVE_LIB_MAC);
             return;
         }
-        Path targetPath = NATIVE_LIB_DIR.resolve("libtesseract.dylib");
+        Path targetPath = NATIVE_LIB_DIR.resolve(LIBTESSERACT_DYLIB);
 
         if (!Files.exists(targetPath.getParent())) {
             try {
@@ -96,15 +116,15 @@ public class FileHelper {
         }
 
         try (
-                InputStream in = FileHelper.class.getClassLoader().getResourceAsStream(TESSERACT_NATIVE_LIB_MAC);
+                InputStream in = FileHelper.class.getClassLoader().getResourceAsStream(TESSERACT_5_NATIVE_LIB_MAC);
                 OutputStream out = Files.newOutputStream(targetPath, CREATE, WRITE);
         ) {
             log.info("Copying library to: " + targetPath.toAbsolutePath());
             IOUtils.copy(in, out);
+            System.setProperty(JNA_LIBRARY_PATH, targetPath.toAbsolutePath().getParent().toString());
         } catch (IOException e) {
             log.error("Could not copy dynamic library", e);
         }
-        System.setProperty("jna.library.path", targetPath.toAbsolutePath().getParent().toString());
     }
 
     public static Path dataPath() {
