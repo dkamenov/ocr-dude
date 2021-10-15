@@ -1,9 +1,7 @@
 package com.kamenov.ocrdude.utils;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.InputStream;
-import java.net.URI;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
