@@ -87,12 +87,12 @@ tasks.register('installer') {
                 "--vendor", vendor,
                 "--copyright", "© $copyrightDate $vendor",
                 "--app-version", installerVersion,
-                "--name", "OCR Dude",
                 "--dest", "build/installer/",
                 "--input", "build/libs",
                 "--main-jar", "ocr-dude.jar" ];
             if (Os.isFamily(Os.FAMILY_MAC)) {
-                cmdLine.addAll(["--icon", "build/OCRDude.icns"])
+                cmdLine.addAll(["--icon", "build/OCRDude.icns",
+                "--name", "OCR Dude"])
             } else if(Os.isFamily(Os.FAMILY_UNIX)) {
                 cmdLine.addAll([
                     "--linux-package-deps", "tesseract-ocr",
@@ -100,6 +100,7 @@ tasks.register('installer') {
                     "--linux-app-category", "Productivity",
                     "--linux-menu-group", "Productivity",
                     "--icon", "src/main/resources/images/general-ocr.png",
+                    "--name", "ocr-dude",
                 ])
             } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 cmdLine.addAll([
@@ -109,6 +110,7 @@ tasks.register('installer') {
                     "--win-per-user-install",
                     "--win-shortcut",
                     "--icon", "src/main/resources/images/general-ocr.ico",
+                    "--name", "OCR Dude",
                 ])
             }
             commandLine cmdLine
