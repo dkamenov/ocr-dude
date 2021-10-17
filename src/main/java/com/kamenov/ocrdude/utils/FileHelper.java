@@ -45,7 +45,7 @@ public class FileHelper {
             dataDir = Paths.get(System.getProperty("APPDATA", userHome), APP_NAME);
         }
         if (dataDir == null) {
-            Paths.get(userHome, HIDDEN_SETTINGS_DIR_NAME);
+            dataDir = Paths.get(userHome, HIDDEN_SETTINGS_DIR_NAME);
         }
         return dataDir.toString();
     }
