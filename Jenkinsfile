@@ -5,6 +5,14 @@ def LABEL_OSX='OS_X'
 pipeline {
     agent any
     stages {
+        stage('checkout') {
+            steps {
+                script {
+                    checkout scm
+                }
+            }
+        }
+
         stage('build') {
             parallel {
                 stage('Mac OS Build') {
@@ -37,7 +45,6 @@ pipeline {
                         }
                     }
                     steps {
-                        checkout scm
                         sh './gradlew clean installer'
                     }
                     post {
