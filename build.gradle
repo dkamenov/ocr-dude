@@ -89,7 +89,9 @@ tasks.register('installer') {
                 "--app-version", installerVersion,
                 "--dest", "build/installer/",
                 "--input", "build/libs",
-                "--main-jar", "ocr-dude.jar" ];
+                "--main-jar", "ocr-dude.jar",
+               "--java-options", "-Xdock:name='OCR Dude'"
+            ];
             if (Os.isFamily(Os.FAMILY_MAC)) {
                 cmdLine.addAll(["--icon", "build/OCRDude.icns",
                 "--name", "OCR Dude"])
