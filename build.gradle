@@ -90,11 +90,11 @@ tasks.register('installer') {
                 "--dest", "build/installer/",
                 "--input", "build/libs",
                 "--main-jar", "ocr-dude.jar",
-               "--java-options", "'-Xdock:name=OCR Dude'"
             ];
             if (Os.isFamily(Os.FAMILY_MAC)) {
                 cmdLine.addAll(["--icon", "build/OCRDude.icns",
-                "--name", "OCR Dude"])
+                "--name", "OCR Dude",
+                "--java-options", "'-Xdock:name=OCR Dude'"])
             } else if(Os.isFamily(Os.FAMILY_UNIX)) {
                 cmdLine.addAll([
                     "--linux-package-deps", "tesseract-ocr",

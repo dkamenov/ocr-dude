@@ -3,6 +3,8 @@ package com.kamenov.ocrdude;
 import com.kamenov.ocrdude.utils.FileHelper;
 import com.kamenov.ocrdude.view.TrayIconView;
 import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.util.logging.FileHandler;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import lombok.NoArgsConstructor;
@@ -22,9 +24,24 @@ public class App extends JFrame {
     private MainView view;
 
     public static void main(String[] args) {
+        preconfigureUi();
         new App().run(args);
     }
 
+    private static void preconfigureUi() {
+        if (SystemUtils.IS_OS_MAC) {
+            System.setProperty("apple.awt.application.name", FileHelper.APP_NAME);
+        } else if (SystemUtils.IS_OS_LINUX) {
+            Toolkit xToolkit = Toolkit.getDefaultToolkit();
+            try {
+                java.lang.reflect.Field awtAppClassNameField = xToolkit.getClass().getDeclaredField("awtAppClassName");
+                awtAppClassNameField.setAccessible(true);
+                awtAppClassNameField.set(xToolkit, FileHelper.APP_NAME);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                log.warn("Could not set App title on Linux", e);
+            }
+        }
+    }
     private void run(String[] args)  {
 
         try {
