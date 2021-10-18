@@ -22,6 +22,7 @@ import org.apache.commons.lang3.SystemUtils;
 public class FileHelper {
     public static final String APP_NAME = "OCR Dude";
     private static final String HIDDEN_SETTINGS_DIR_NAME = ".ocrdude";
+    private static final String APPDATA = "APPDATA";
     private static final Path DATA_DIR = Paths.get(getDataDir(), "data");
     private static final Path NATIVE_LIB_DIR = Paths.get(getDataDir(), "lib");
     private static final String LIBTESSERACT_DYLIB = "libtesseract.dylib";
@@ -42,10 +43,12 @@ public class FileHelper {
             dataDir = Paths.get(userHome, "Library", "Application Support", APP_NAME);
         }
         if (SystemUtils.IS_OS_WINDOWS) {
-            dataDir = Paths.get(System.getProperty("APPDATA", userHome), APP_NAME);
+            if (System.getenv().containsKey(APPDATA)) {
+                dataDir = Paths.get(System.getenv(APPDATA), APP_NAME);
+            }
         }
         if (dataDir == null) {
-            Paths.get(userHome, HIDDEN_SETTINGS_DIR_NAME);
+            dataDir = Paths.get(userHome, HIDDEN_SETTINGS_DIR_NAME);
         }
         return dataDir.toString();
     }

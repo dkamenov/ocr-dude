@@ -10,8 +10,8 @@ plugins {
 }
 
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
 
 repositories {
     // Use jcenter for resolving dependencies.
@@ -87,12 +87,14 @@ tasks.register('installer') {
                 "--vendor", vendor,
                 "--copyright", "© $copyrightDate $vendor",
                 "--app-version", installerVersion,
-                "--name", "OCR Dude",
                 "--dest", "build/installer/",
                 "--input", "build/libs",
-                "--main-jar", "ocr-dude.jar" ];
+                "--main-jar", "ocr-dude.jar",
+            ];
             if (Os.isFamily(Os.FAMILY_MAC)) {
-                cmdLine.addAll(["--icon", "build/OCRDude.icns"])
+                cmdLine.addAll(["--icon", "build/OCRDude.icns",
+                "--name", "OCR Dude",
+                "--java-options", "'-Xdock:name=OCR Dude'"])
             } else if(Os.isFamily(Os.FAMILY_UNIX)) {
                 cmdLine.addAll([
                     "--linux-package-deps", "tesseract-ocr",
@@ -100,6 +102,8 @@ tasks.register('installer') {
                     "--linux-app-category", "Productivity",
                     "--linux-menu-group", "Productivity",
                     "--icon", "src/main/resources/images/general-ocr.png",
+                    "--name", "ocr-dude",
+                    "--java-options", "'--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED'" // to allow app title changes via reflection
                 ])
             } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 cmdLine.addAll([
@@ -109,6 +113,7 @@ tasks.register('installer') {
                     "--win-per-user-install",
                     "--win-shortcut",
                     "--icon", "src/main/resources/images/general-ocr.ico",
+                    "--name", "OCR Dude",
                 ])
             }
             commandLine cmdLine

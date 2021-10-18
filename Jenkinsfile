@@ -5,6 +5,14 @@ def LABEL_OSX='OS_X'
 pipeline {
     agent any
     stages {
+        stage('checkout') {
+            steps {
+                script {
+                    checkout scm
+                }
+            }
+        }
+
         stage('build') {
             parallel {
                 stage('Mac OS Build') {
@@ -36,17 +44,7 @@ pipeline {
                             filename 'Dockerfile.agent'
                         }
                     }
-                    when {
-                        beforeAgent true
-                        expression {
-                            return nodesByLabel(LABEL_LINUX).size() > 0
-                        }
-                    }
                     steps {
-                        script {
-                            copyArtifacts(projectName: 'Tesseract-libs', filter: "tesseract/build/.libs/libtesseract.5.dylib",
-                                    target: 'src/main/resources/lib', selector: lastSuccessful(), flatten: true);
-                        }
                         sh './gradlew clean installer'
                     }
                     post {
