@@ -10,8 +10,8 @@ plugins {
 }
 
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
 
 repositories {
     // Use jcenter for resolving dependencies.
@@ -103,6 +103,7 @@ tasks.register('installer') {
                     "--linux-menu-group", "Productivity",
                     "--icon", "src/main/resources/images/general-ocr.png",
                     "--name", "ocr-dude",
+                    "--java-options", "'--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED'" // to allow app title changes via reflection
                 ])
             } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 cmdLine.addAll([

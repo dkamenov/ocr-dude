@@ -4,6 +4,7 @@ import com.kamenov.ocrdude.utils.FileHelper;
 import com.kamenov.ocrdude.view.TrayIconView;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
+import java.lang.reflect.InaccessibleObjectException;
 import java.util.logging.FileHandler;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -37,7 +38,7 @@ public class App extends JFrame {
                 java.lang.reflect.Field awtAppClassNameField = xToolkit.getClass().getDeclaredField("awtAppClassName");
                 awtAppClassNameField.setAccessible(true);
                 awtAppClassNameField.set(xToolkit, FileHelper.APP_NAME);
-            } catch (IllegalAccessException | NoSuchFieldException e) {
+            } catch (IllegalAccessException | NoSuchFieldException | InaccessibleObjectException e) {
                 log.warn("Could not set App title on Linux", e);
             }
         }
