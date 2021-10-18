@@ -22,15 +22,9 @@ public class App extends JFrame {
     private MainView view;
 
     public static void main(String[] args) {
-        preconfigureUi();
         new App().run(args);
     }
 
-    private static void preconfigureUi() {
-        if (SystemUtils.IS_OS_MAC) {
-            System.setProperty("apple.awt.application.name", FileHelper.APP_NAME);
-        }
-    }
     private void run(String[] args)  {
 
         try {
